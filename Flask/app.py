@@ -111,14 +111,50 @@ def recommender(df, text_pca,n_recommendations=5):
 
 
 app = flask.Flask(__name__)
+#
+# @app.route("/")
+# def viz_page():
+# 	with open("templates/job_recommender.html", 'r') as viz_file:
+# 		return viz_file.read()
 
-@app.route("/")
-def viz_page():
-	with open("templates/job_recommender.html", 'r') as viz_file:
-		return viz_file.read()
+# @app.route("/", methods=["POST", "GET"])
+# def answer():
+# 	def make_recommendations(text, df, n_recommendations=5):
+# 		formatted_text = format_text(text)
+# 		ngramed_text = create_ngrams(formatted_text)
+# 		text_vector = vectorize(ngramed_text)
+# 		text_pca = pcaitize(text_vector)
+# 		recommendations = recommender(df, text_pca,n_recommendations=5)
+# 		return recommendations.values
+#
+# 	data = flask.request.json
+# 	test_case_list = data["question"]
+# 	tmp = test_case_list[0]
+#
+# 	answer = list(make_recommendations(tmp,df))
+#
+# 	print(answer)
+#
+#
+#
+# 	# return flask.jsonify({'answer':answer})
+# 	return flask.render_template('job_recommender.html',recotest=answer)
 
-@app.route("/recommendations", methods=["POST"])
-def answer():
+answer = ''
+
+@app.route("/plotly", methods=["GET"])
+def plotly():
+    return flask.render_template('plotly_embedded.html')
+
+@app.route("/results", methods=["GET"])
+def results():
+	with open ('answer.csv', 'r') as r:
+		answer = r.read()
+	r.close()
+	return flask.render_template('test.html', answer = answer)
+
+@app.route("/", methods=["POST", "GET"])
+def test():
 	def make_recommendations(text, df, n_recommendations=5):
 		formatted_text = format_text(text)
 		ngramed_text = create_ngrams(formatted_text)
@@ -128,22 +164,47 @@ def answer():
 		return recommendations.values
 
 	data = flask.request.json
-	test_case_list = data["question"]
-	tmp = test_case_list[0]
-	#Create a dictionary from ‘processed_docs’ containing the number of times a word appears in the training set.
 
-	answer = list(make_recommendations(tmp,df))
+	if data is None:
+		answer = ''
+
+	else:
+		print(data["question"][0][:10])
+		test_case_list = data["question"]
+		tmp = test_case_list[0]
+
+		answer = list(make_recommendations(tmp,df))
+
+		with open ('answer.csv', 'w') as w:
+			for line in answer:
+				w.write(line)
+				w.write(', ')
+		w.close()
+
+		return flask.redirect(flask.url_for('response'))
+
+	return flask.render_template('test.html', answer = answer)
+
+@app.route("/response", methods=["POST", "GET"])
+def response():
+	with open ('answer.csv', 'r') as r:
+		answer = r.read()
+	r.close()
+	print('answer is', answer)
+	return flask.render_template('test.html', answer = answer)
+
+@app.route("/redirectme")
+def redirectme():
+	return flask.redirect(flask.url_for('redirecthere'))
+
+@app.route("/redirecthere")
+def redirecthere():
+	with open ('answer.csv', 'r') as r:
+		answer = r.read()
+	r.close()
+	return flask.render_template('test.html', answer = answer)
 
 
-
-	#return flask.jsonify({'answer':answer})
-	return flask.render_template('job_recommender.html',recotest='string')
-
-
-
-@app.route("/plotly", methods=["GET"])
-def plotly():
-    return flask.render_template('plotly_embedded.html')
 
 if __name__=="__main__":
 	app.run(debug=True, threaded=True)
