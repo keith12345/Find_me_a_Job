@@ -1,0 +1,11 @@
+{% extends 'job_recommender.html' %}
+
+{% block rec_group %}
+
+<p>
+  {% for p in answer %}
+    <br>  {{ p }}
+  {% endfor %}
+</p>
+
+{% endblock %}

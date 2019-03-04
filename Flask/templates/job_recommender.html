@@ -1,0 +1,171 @@
+{% block recommender %}
+
+<html lang = "en">
+
+<head>
+  <html lang = "en">
+  <meta charset="utf-8">
+
+  <script
+    src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
+  </script>
+
+  <link href='//fonts.googleapis.com/css?family=Basic' rel='stylesheet'>
+
+</head>
+
+<style type = "text/css">
+
+  body {
+    background-color: #FAFAFA;
+    width: 700px; margin: auto;
+  }
+
+  .welcome-message {
+    text-align: center;
+    font-family: 'Arial';font-size: 22px;
+  }
+
+  .body-text {
+    text-align: center;
+    font-family: 'Basic';font-size: 22px;
+    font-weight: bold;
+  }
+
+
+  .page-header {
+    font-size: 40px;
+    font-family: 'Basic';
+    font-weight: bold;
+    text-align: center;
+
+  }
+  .input-group-label {
+    font-size: 16px;
+    font-family: 'Basic';
+    font-size: 22px;
+  }
+  .input-group-field {
+    width: 600px;
+    height: 200px;
+    border-width: 1px;
+    border-color: #295EEE;
+    font-size: 12px;
+  }
+  .send-button {
+    height: 28px;
+    background-color: #295EEE;
+    font-size: 16px;
+    font-family: 'Basic';
+    color: #FAFAFA;
+    font-weight: bold;
+    border: 1px solid #2454D4;
+    right: 500px;
+  }
+  .send-button:hover {
+    background-color: #4c79ef;
+    border: 1px solid #295EEE;
+    color: white;
+}
+  .user-answer-label {
+    font-family: 'Basic';font-size: 22px;
+  }
+  .answer-for-user {
+    width: 600px;
+    height: 50px;
+    border-width: 1px;
+    font-size: 16px;
+    border: 1px solid #2454D4;
+  }
+  ::-webkit-input-placeholder {
+    color: gray;
+  }
+</style>
+
+<body>
+  <label class="page-header">FindDataJobs.com</label><br>
+  <br>
+<form action="/">
+
+  <label class="welcome-message"
+  <p>
+   Using <strong>Data Science</strong> <br> to find jobs <br> in
+     <strong>Data Science</strong>.
+   <br> <br> <i>#theFutureIsNow</i> </p>
+  </label>
+      <label class="input-group-label">
+      Your ideal job description:
+      </label>
+    <br>
+      <textarea class="input-group-field" id="user-question"></textarea>
+      <br>
+      <input
+        method="GET"
+        class="send-button"
+        type="button"
+        value="Process Description"
+        onClick="collectQuestion()"
+        />
+        <a href="/results">See Results</a>
+  <br><br><br>
+
+<label class="user-answer-label">Recommendations: </label>
+
+<br>
+
+</form>
+
+<p>
+{% block rec_group %}
+{% endblock %}
+</p>
+
+
+<br><br><br>
+
+<!-- <input
+  class="send-button"
+  type="button"
+  value="Visualize jobs in 3d because we can"
+  onClick="location.href = '/plotly'"
+  /> -->
+
+<a href="/plotly">Visualize jobs in 3d because we can</a>
+
+
+<script>
+var answer = ""
+
+// Gets the question that the user typed in
+
+function collectQuestion() {
+  var userQuestion = document.getElementById("user-question").value;
+  // Remove newline characters
+  var userQuestion = userQuestion.replace(/\r?\n|\r/g, " ");
+  // Remove quotation marks
+  var userQuestion = userQuestion.replace(/['"]+/g, '')
+  //console.log(typeof userQuestion);
+  //console.log(userQuestion);
+  $.ajax({
+    type: "POST",
+    contentType: "application/json; charset=utf-8",
+    url: "/",
+    dataType: "json",
+    async: true,
+    // data: JSON.stringify({"question" : ["+userQuestion+"]}),
+    data: "{\"question\": [\""+userQuestion+"\"]}",
+    success: function(d) {
+      answer = d.answer
+      document.getElementById("user-answer").value = answer
+
+      // console.log(userQuestion)
+    }
+  })
+}
+
+</script>
+
+</body>
+
+</html>
+{% endblock %}
