@@ -1,0 +1,57 @@
+{% extends 'job_recommender.html' %}
+{% block rec_group %}
+
+  <link href='//fonts.googleapis.com/css?family=Basic' rel='stylesheet'>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Create three equal columns that floats next to each other */
+.company-column {
+  float: left;
+  width: 30%;
+}
+.job-column {
+  float: left;
+  width: 70%;
+}
+.title-text {
+  font-family: 'Basic';
+  font-size: 22px;
+  text-align: left;
+}
+.body-text {
+  font-family: 'Basic';
+  font-size: 16px;
+  text-align: left;
+}
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
+
+<div class="row">
+  <div class="company-column">
+    <h2 class="title-text">Company</h2>
+    <p class="body-text">
+      {% for a in range(5) %}
+          {{ answer.iloc[a, 0] }} <br>
+      {% endfor %}
+    </p>
+  </div>
+  <div class="job-column">
+    <h2 class="title-text">Job Title</h2>
+    <p class="body-text">
+      {% for a in range(5) %}
+          <a href="{{ answer.iloc[a, 2] }}">{{ answer.iloc[a, 1] }}</a>  <br>
+      {% endfor %}
+    </p>
+  </div>
+
+
+
+{% endblock %}
